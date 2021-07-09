@@ -8,6 +8,8 @@ app.listen(port, ()=>{
 });
 
 const db = require('./database');
+const cache = require ('./cache.js');
+
 
 app.get('/usuarios', db.getUsuarios);
 app.post('/usuarios', db.addUsuario);
