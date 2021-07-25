@@ -15,12 +15,14 @@ cachedb.on("connect", function(error){
 cachedb.on("error", function(error){
     console.log(error);
 });
+
+
 const rascunho = {
     id: "1",
     texto: "lkdfjldg"
 };
 
-
+/*
 cachedb.setex("Publicação", 7200, JSON.stringify(rascunho), redis.print);
 
-cachedb.get("Publicação", redis.print); 
+cachedb.get("Publicação", redis.print); */
