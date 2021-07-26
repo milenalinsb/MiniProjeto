@@ -16,13 +16,13 @@ conectar().then(console.log ("Conectado!"));
 //Objetos para testes
 const publica = {
     email: "milenalins@gmail.com",
-    titulo: "Publicação",
+    titulo: "Publicação Milena",
     texto: "askdfhjkghkdfhkjghkdfjh"
 };
 
 const publica2 = {
     email: "gabrielalves@gmail.com",
-    titulo: "Publicação",
+    titulo: "Publicação Gabriel",
     texto: "kdfjgdfdflgndj"
 };
 
@@ -38,7 +38,7 @@ async function addPubli(obj){
     }
 }
 
-addPubli(publica);
+//addPubli(publica);
 //addPubli(publica2);
 
 //Função para retornar todas as publicações
@@ -53,7 +53,7 @@ async function getPublis(){
     }
 }
 
-//getPublis();
+getPublis();
 
 //Função para retornar as publicações de um usuário
 async function getPubliUsuario(usuario){
@@ -62,7 +62,7 @@ async function getPubliUsuario(usuario){
         const database = publicacao.db(`${process.env.MONGO_DATABASE}`);
         const publis = database.collection('Publicacao');
         const filter =  {email: usuario};
-        await publis.find().forEach(publicacao => console.log(publicacao));
+        await publis.find(filter).forEach(publicacao => console.log(publicacao));
     } finally{
         await publicacao.close();
     }
@@ -75,17 +75,17 @@ async function atualizarPubli(query, update){
     try{
         await publicacao.connect();
         const publi = publicacao.db(`${process.env.MONGO_DATABASE}`).collection('Publicacao');
-
         await publi.updateOne(query, update).then(console.log("Publicação atualizada!"));
     }finally{
         await publicacao.close();
     }
 }
 
-//const query = {titulo: "Publicacao"}, {email: "milenalins@gmail.com"};
-//const update = {$set: {texto: "Agora sim"}};
+const query = {titulo: "Publicação Milena"};
+const update = {$set: {texto: "Agora sim"}};
 //atualizarPubli(query, update);
 
+//getPubliUsuario ('milenalins@gmail.com');
 
 //Função para deletar uma publicação
 async function deletarPubli(filter){
@@ -100,8 +100,8 @@ async function deletarPubli(filter){
     }
 }
 
-// const filter = {titulo: 'Publicação', email: "milenalins@gmail.com"};
-// deletarPubli(filter);
+const filter = {titulo: 'Publicação Gabriel', email: "gabrielalves@gmail.com"};
+//deletarPubli(filter);
 
 module.exports = {
     getPubliUsuario,

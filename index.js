@@ -16,3 +16,8 @@ app.post('/usuarios', db.addUsuario);
 app.put('/usuarios', db.atualizarUsuario);
 app.delete('/usuario/:id', db.deletarUsuario);
 
+app.get('/publicacoes', postagem.getPublis);
+app.get('/publicacoes/:id', postagem.getPubliUsuario);
+app.post('/publicacoes', postagem.addPubli);
+app.put('/publicacoes', postagem.atualizarPubli);
+app.delete('/publicacoes/:id', postagem.deletarPubli);
