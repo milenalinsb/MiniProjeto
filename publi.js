@@ -11,7 +11,7 @@ async function conectar (){
     await publicacao.connect()
 }
 
-conectar().then(console.log ("Conectado!"));
+conectar().then(console.log ("Conectado MongoDB!"));
 
 //Objetos para testes
 const publica = {
@@ -53,7 +53,7 @@ async function getPublis(){
     }
 }
 
-getPublis();
+//getPublis();
 
 //Função para retornar as publicações de um usuário
 async function getPubliUsuario(usuario){

@@ -9,7 +9,7 @@ const cachedb = redis.createClient({
 });
 
 cachedb.on("connect", function(error){
-    console.log("Conectado!");
+    console.log("Conectado Redis!");
 });
 
 cachedb.on("error", function(error){

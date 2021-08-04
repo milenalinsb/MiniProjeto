@@ -10,6 +10,7 @@ app.listen(port, ()=>{
 const db = require('./database');
 const cache = require ('./cache');
 const postagem = require ('./publi');
+const amizade = require ('./seguir');
 
 app.get('/usuarios', db.getUsuarios);
 app.post('/usuarios', db.addUsuario);

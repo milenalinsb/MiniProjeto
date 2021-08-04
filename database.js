@@ -10,7 +10,7 @@ const client = new Client({
 });
 
 client.connect()
-    .then(()=> console.log('Conectado!'))
+    .then(()=> console.log('Conectado PG!'))
     .catch(err => console.log(err.stack));
 
 const getUsuarios = (request, response) =>{
