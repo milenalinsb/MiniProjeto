@@ -1,6 +1,5 @@
 require('dotenv').config();
 const neo4j = require('neo4j-driver');
-const { getUsuarios } = require('./database');
 
 const uri = `neo4j://${process.env.NEO4J_HOST}:${process.env.NEO4J_PORT}`;
 
@@ -8,24 +7,26 @@ const uri = `neo4j://${process.env.NEO4J_HOST}:${process.env.NEO4J_PORT}`;
 const amizade = neo4j.driver(uri, neo4j.auth
     .basic(process.env.NEO4J_USER, process.env.NEO4J_PASSWORD));
 
+//Iniciando conexão no banco 
+const session = amizade.session();
+
 //Verificando conexão
 async function conectar (){
-    await amizade.session()
+    const session = amizade.session();
 }
 conectar().then(console.log ("Conectado Neo4j!"));
 
+//Função para adicionar um usuário, o único parâmetro recebido é o email
 async function addUser(obj){
-    try{
-        await amizade.session();
-        const query = 'CREATE (p:Usuario{email:"${obj.email}"}) RETURN p';
-        await amizade.run(query).then(result => console.log(result.records[0].length>0));
-    }finally{
-        await amizade.close();
-    }
+    const session = amizade.session();
+    await session.run('CREATE (p:Pessoa{email:$email}) RETURN p',
+        {email: obj.email})
+        .then(result => console.log(result.records[0].length>0))
+        .catch(error => console.log(error))
+        .then(() => session.close);
 }
 
 //Objetos para teste
-
 const user1 = {
     email:"milena@gmail.com"
 }
@@ -50,61 +51,60 @@ const user6 = {
     email:"marcos@gmail.com"
 }
 
-/* 
+
+/*
 addUser(user1);
 addUser(user2);
 addUser(user3);
 addUser(user4);
 addUser(user5);
-addUser(user6); */
+addUser(user6);
+*/
 
-
+//Função para adicionar amizade entre dois usuários
 async function addAmizade(email1, email2){
-    try{
-        await amizade.session();
-        const query = `MATCH (p1:Pessoa), (p2:Pessoa) 
-            CREATE (p1)-[:AMIGO]->(p2)`;
-        await amizade.run(query).then(result => console.log(
-            result.summary.counters._stats.relationshipsCreated));
-    } finally{
-        await amizade.close();
-    }
+    const session = amizade.session();
+    const query = 'MATCH (p1:Pessoa), (p2:Pessoa) WHERE p1.email=$email1 AND p2.email=$email2 CREATE (p1)-[:AMIGO]->(p2)';
+    await session.run(query,  {email1: email1, email2:email2})
+        .then(result => console.log(result.summary.counters._stats.relationshipsCreated))
+        .catch(error => console.log(error))
+        .then(session.close);
 }
 
-//addAmizade("milena@gmail.com", "gabriel@gmail.com");
+//addAmizade("felipe@gmail.com", "michele@gmail.com");
 
-/* 
+/*
 async function getAmizadeUser(email){
-    try{
-        await amizade.session();
-        const query = `MATCH (p:Pessoa{email: email}) -[:AMIGO] -> (p2:Pessoa)          
-        RETURN p2`;
-        await amizade.run(query).then(result => console.log(
-            result.summary.counters._stats.//////)
-        )
-    }
+    const session = amizade.session();
+    const query = `MATCH (p:Pessoa) -[:AMIGO] -> (p2:Pessoa)          
+    RETURN p2`;
+    await session.run(query, {email: email})
+    .then(result => console.log(result.summary.counters._************stats.relationshipsCreated))
+    .catch(error => console.log(error))
+    .then(session.close);
 } */
+
+//getAmizadeUser("milena@gmail.com")
  
 async function deleteUser(email){
-    try{
-        await amizade.session();
-        const query = `MATCH (p:Usuario{email:"${email}"}) DETACH DELETE p`;
-        await amizade.run(query).then(result => console.log(
-            result.summary.counters._stats.nodesDeleted));
-    }finally{
-        await amizade.close();
-    }
+    const session = amizade.session();
+    const query = `MATCH (p:Pessoa{email:$email}) DETACH DELETE p`;
+    await session.run(query, {email:email})
+        .then(result => console.log(result.summary.counters._stats.nodesDeleted))
+        .catch(error => console.log(error))
+        .then(session.close);
 } 
 
-// deleteUser("felipe@gmail.com");
-/* 
+//deleteUser("michele@gmail.com");
+
 async function recomendaParaUsuario (email){
-    try{
-        await amizade.session();
-        const query = `MATCH (p:Usuario {email: email})- [:Segue] -> () -[:Segue] -> (p2:Usuario) 
-        RETURN p2`
-        await amizade.run(query).then(result => console.log(result.summary.counters._stats./////////))
-    }
+    const session = amizade.session();
+    const query = `MATCH (p:Pessoa{email:$email})-[:AMIGO] -> (p2:Pessoa)-[:Amigo]-> (p3:Pessoa) 
+    RETURN p3`;
+    await session.run(query, {email:email})
+        .then(result => console.log(result.summary.counters._stats.******))
+        .catch(error => console.log(error))
+        .then(session.close);
 }
- */
+
 //recomendaParaUsuario ("milena@gmail.com")
