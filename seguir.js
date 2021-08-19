@@ -1,5 +1,6 @@
 require('dotenv').config();
 const neo4j = require('neo4j-driver');
+const collect = require('collect.js');
 
 const uri = `neo4j://${process.env.NEO4J_HOST}:${process.env.NEO4J_PORT}`;
 
@@ -16,85 +17,67 @@ async function conectar (){
 }
 conectar().then(console.log ("Conectado Neo4j!"));
 
-//Função para adicionar um usuário, o único parâmetro recebido é o email
-async function addUser(obj){
+//Função para adicionar um usuário
+async function addUser(request, response){
     const session = amizade.session();
+    const {email} = request.body;
+
     await session.run('CREATE (p:Pessoa{email:$email}) RETURN p',
-        {email: obj.email})
-        .then(result => console.log(result.records[0].length>0))
-        .catch(error => console.log(error));
+        {email: email})
+        .then(result => response.status(200).send('Usuário inserido!'))
+        .catch(error => response.status(400).send(error))
 }
-
-//Objetos para teste
-const user1 = {
-    email:"milena@gmail.com"
-}
-
-const user2 = {
-    email:"gabriel@gmail.com"
-}
-
-const user3 = {
-    email:"felipe@gmail.com"
-}
-
-const user4 = {
-    email:"michele@gmail.com"
-}
-
-const user5 = {
-    email:"marcos@gmail.com"
-}
-
-
-/*
-addUser(user1);
-addUser(user2);
-addUser(user3);*/
-
-//addUser(user4);
-
-//addUser(user5);
 
 //Função para adicionar amizade entre dois usuários
-async function addAmizade(email1, email2){
+async function addAmizade(request, response){
     const session = amizade.session();
+    const {email1, email2} = request.body;
+
     const query = 'MATCH (p1:Pessoa), (p2:Pessoa) WHERE p1.email=$email1 AND p2.email=$email2 CREATE (p1)-[:AMIGO]->(p2)';
-    await session.run(query,  {email1: email1, email2:email2})
-        .then(result => console.log(result.summary.counters._stats.relationshipsCreated > 0))
-        .catch(error => console.log(error));
+    await session.run(query,  
+        {email1: email1, email2:email2})
+        .then(result => response.status(200).send('Amizade adicionada!'))
+        .catch(error => response.status(400).send(error))
 }
-//addAmizade("felipe@gmail.com", "michele@gmail.com");
 
-
-async function getAmizadeUser(email){
+//Fução para retornar todos os amigos de um usuário
+async function getAmizadeUser(request, response){
     const session = amizade.session();
+    const {email} = request.body;
+
     const query = `MATCH (p:Pessoa{email:$email}) -[:AMIGO] -> (p2:Pessoa)          
     RETURN p2.email as email`;
-    await session.run(query, {email: email})
-    .then(result => result.records.forEach(record => console.log (record.get('email'))))
-    .catch(error => console.log(error));
+    await session.run(query, 
+        {email: email})
+        .then(result =>  result.records.forEach(record => response.send(record.get('email'))))
+        .catch(error => response.status(400).send(error));
 } 
-
-getAmizadeUser("milena@gmail.com");
  
-async function deleteUser(email){
+async function deleteUser(request, response){
     const session = amizade.session();
+    const {email} = request.body;
     const query = `MATCH (p:Pessoa{email:$email}) DETACH DELETE p`;
-    await session.run(query, {email:email})
-        .then(result => console.log(result.summary.counters._stats.nodesDeleted > 0))
-        .catch(error => console.log(error));
+    await session.run(query,
+        {email: email})
+        .then(result => response.status(200).send('Usuário deletado!'))
+        .catch(error => response.status(400).send(error))
 } 
 
-//deleteUser("marcos@gmail.com");
-
-async function recomendaParaUsuario (email){
+async function recomendaParaUsuario (request, response){
     const session = amizade.session();
+    const {email} = request.body;
     const query = `MATCH (p1:Pessoa{email:$email})-[:AMIGO]->(:Pessoa)-[:AMIGO]->(p2:Pessoa)
     RETURN p2.email as email`;
-    await session.run(query, {email:email})
-        .then(result => result.records.forEach(record => console.log (record.get('email'))))        
-        .catch(error => console.log(error));
+    await session.run(query, 
+        {email:email})
+        .then(result =>  result.records.forEach(record => response.send(record.get('email'))))        
+        .catch(error => response.status(400).send(error));
 }
 
-//recomendaParaUsuario ("milena@gmail.com")
+module.exports = {
+    getAmizadeUser,
+    addUser,
+    deleteUser,
+    addAmizade,
+    recomendaParaUsuario
+};

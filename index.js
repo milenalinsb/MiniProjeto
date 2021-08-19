@@ -24,3 +24,8 @@ app.put('/publicacoes', postagem.atualizarPubli);
 app.delete('/publicacoes/:id', postagem.deletarPubli);
 
 
+app.get('/user/:email', amizade.getAmizadeUser);
+app.post('/user/', amizade.addUser);
+app.post('/user/:email1/:email2', amizade.addAmizade);
+app.delete('/user/:email', amizade.deleteUser);
+app.get ('/recomenda/:email', amizade.recomendaParaUsuario);

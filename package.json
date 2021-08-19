@@ -20,7 +20,8 @@
     "pg": "8.6.0",
     "redis": "3.1.2",
     "mongodb": "4.0.1",
-    "neo4j-driver": "4.3.2"
+    "neo4j-driver": "4.3.2",
+    "collect.js": "4.28.5"
   },
   "bugs": {
     "url": "https://github.com/milenalinsb/MiniProjeto/issues"

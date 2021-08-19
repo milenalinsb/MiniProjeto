@@ -13,41 +13,28 @@ async function conectar (){
 
 conectar().then(console.log ("Conectado MongoDB!"));
 
-//Objetos para testes
-const publica = {
-    email: "milenalins@gmail.com",
-    titulo: "Publicação Milena",
-    texto: "askdfhjkghkdfhkjghkdfjh"
-};
-
-const publica2 = {
-    email: "gabrielalves@gmail.com",
-    titulo: "Publicação Gabriel",
-    texto: "kdfjgdfdflgndj"
-};
-
 //Função de adicionar uma nova publicação
-async function addPubli(obj){
+async function addPubli(request, response){
     try{
         await publicacao.connect();
         const publi = publicacao.db(`${process.env.MONGO_DATABASE}`).collection('Publicacao');
-        await publi.insertOne(obj).then(console.log("Publicação inserida!"));
+        const {email,titulo,texto} = request.body;
+        await publi.insertOne({email,titulo,texto})
+        .then(result => response.status(200).send('Publicação Inserida'))
+        .catch(error => response.status(400).send(error));
 
     }finally{
         await publicacao.close();
     }
 }
 
-//addPubli(publica);
-//addPubli(publica2);
-
 //Função para retornar todas as publicações
-async function getPublis(){
+async function getPublis(request, response){
     try{
         await publicacao.connect();
         const database = publicacao.db(`${process.env.MONGO_DATABASE}`);
         const publicacoes = database.collection('Publicacao');
-        await publicacoes.find().forEach(publis => console.log(publis));
+        await publicacoes.find().forEach(publis => response.send(publis));
     } finally{
         await publicacao.close();
     }
@@ -56,13 +43,14 @@ async function getPublis(){
 //getPublis();
 
 //Função para retornar as publicações de um usuário
-async function getPubliUsuario(usuario){
+async function getPubliUsuario(request, response){
     try{
         await publicacao.connect();
         const database = publicacao.db(`${process.env.MONGO_DATABASE}`);
+        const {email} = request.body;
         const publis = database.collection('Publicacao');
-        const filter =  {email: usuario};
-        await publis.find(filter).forEach(publicacao => console.log(publicacao));
+        const filter =  {email: email};
+        await publis.find(filter).forEach(publicacao => response.send(publicacao));
     } finally{
         await publicacao.close();
     }
@@ -71,37 +59,31 @@ async function getPubliUsuario(usuario){
 //getPubliUsuario ('milenalins@gmail.com');
 
 //Função para atualizar uma publicação
-async function atualizarPubli(query, update){
+async function atualizarPubli(request, response){
     try{
         await publicacao.connect();
         const publi = publicacao.db(`${process.env.MONGO_DATABASE}`).collection('Publicacao');
-        await publi.updateOne(query, update).then(console.log("Publicação atualizada!"));
+        const {query, update} = request.body;
+        await publi.updateOne({query, update})
+        .then(result => response.status(200).send('Publicação Atualizada!'))
+        .catch(error => response.status(400).send(error))
     }finally{
         await publicacao.close();
     }
 }
 
-const query = {titulo: "Publicação Milena"};
-const update = {$set: {texto: "Agora sim"}};
-//atualizarPubli(query, update);
-
-//getPubliUsuario ('milenalins@gmail.com');
-
 //Função para deletar uma publicação
-async function deletarPubli(filter){
+async function deletarPubli(request, response){
     try{
         await publicacao.connect();
         const usuario = publicacao.db(`${process.env.MONGO_DATABASE}`).collection('Publicacao');
-
-        const result = await usuario.deleteOne(filter);
-        console.log(`${result.deletedCount} documentos removidos`);
+        const {filter} = request.body;
+        const result = await usuario.deleteOne({filter});
+        response.send(`${result.deletedCount} documentos removidos`);
     }finally{
         await publicacao.close();
     }
 }
-
-const filter = {titulo: 'Publicação Gabriel', email: "gabrielalves@gmail.com"};
-//deletarPubli(filter);
 
 module.exports = {
     getPubliUsuario,
