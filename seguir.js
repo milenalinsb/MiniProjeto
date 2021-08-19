@@ -51,7 +51,8 @@ async function getAmizadeUser(request, response){
         .then(result =>  result.records.forEach(record => response.send(record.get('email'))))
         .catch(error => response.status(400).send(error));
 } 
- 
+
+//Função para deletar um usuário 
 async function deleteUser(request, response){
     const session = amizade.session();
     const {email} = request.body;
@@ -62,6 +63,7 @@ async function deleteUser(request, response){
         .catch(error => response.status(400).send(error))
 } 
 
+//Função para recomendar usuários
 async function recomendaParaUsuario (request, response){
     const session = amizade.session();
     const {email} = request.body;

@@ -1,6 +1,8 @@
 require('dotenv').config();
 
 const {Client} = require('pg');
+
+//Criando banco
 const client = new Client({
     host: process.env.PG_HOST,
     port: process.env.PG_PORT,
@@ -9,10 +11,12 @@ const client = new Client({
     password: process.env.PG_PASSWORD,
 });
 
+//Verificando conexão
 client.connect()
     .then(()=> console.log('Conectado PG!'))
     .catch(err => console.log(err.stack));
 
+//Função para retornar os usuários
 const getUsuarios = (request, response) =>{
     client.query('SELECT * FROM usuario', (error, results) => {
         if(error){
@@ -22,7 +26,8 @@ const getUsuarios = (request, response) =>{
         response.status(200).json(results.rows);
     });
 }
-    
+
+//Função para adicionar um novo usuário
 const addUsuario = (request, response) =>{
     const {nome,email} = request.body;
     
@@ -35,7 +40,8 @@ const addUsuario = (request, response) =>{
         response.status(200).send('Usuário inserido!');
     });
 };
-    
+
+//Função para atualizar os dados de um usuário
 const atualizarUsuario = (request, response) => {
         
     const { nome, email } = request.body;
@@ -51,7 +57,9 @@ const atualizarUsuario = (request, response) => {
         response.status(200).send('Usuário modificado!');
     });
 };
-    
+
+
+//Função para deletar um usuário
 const deletarUsuario = (request, response) => {
     const id = parseInt(request.params.id)
       
