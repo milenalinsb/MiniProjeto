@@ -1,6 +1,5 @@
 require('dotenv').config();
 const neo4j = require('neo4j-driver');
-const collect = require('collect.js');
 
 const uri = `neo4j://${process.env.NEO4J_HOST}:${process.env.NEO4J_PORT}`;
 

@@ -40,8 +40,6 @@ async function getPublis(request, response){
     }
 }
 
-//getPublis();
-
 //Função para retornar as publicações de um usuário
 async function getPubliUsuario(request, response){
     try{
@@ -55,8 +53,6 @@ async function getPubliUsuario(request, response){
         await publicacao.close();
     }
 }
-
-//getPubliUsuario ('milenalins@gmail.com');
 
 //Função para atualizar uma publicação
 async function atualizarPubli(request, response){
